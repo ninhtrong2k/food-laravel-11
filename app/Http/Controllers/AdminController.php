@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\WebsiteEmail;
 use App\Models\Admin;
+use App\Traits\FileUploadTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,13 +12,14 @@ use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
+    use FileUploadTraits;
     public function AdminLogin()
     {
         return view('admin.login');
     }
     public function AdminDashboard()
     {
-        return view('admin.admin_dashboard');
+        return view('admin.index');
     }
     public function AdminLoginSubmit(Request $request)
     {
@@ -88,5 +90,67 @@ class AdminController extends Controller
         $admin_data->token = null;
         $admin_data->save();
         return redirect()->route('admin.login')->with('success', 'Password Reset Successfully');
+    }
+    public function AdminProfile()
+    {
+        $id = Auth::guard('admin')->id();
+        $profileData = Admin::find($id);
+        if (!$profileData) {
+            abort('404', 'Profile not found');
+        }
+        return view('admin.admin_profile', compact('profileData'));
+    }
+    public function AdminProfileStore(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email']
+        ]);
+        $id = Auth::guard('admin')->id();
+        $data = Admin::find($id);
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->phone = $request->phone;
+        $data->address = $request->address;
+        if ($request->hasFile('photo')) {
+            $data->photo = $this->updateFile($request, 'photo', 'admin/photo', $data->photo);
+        }
+        $data->save();
+        $notification = [
+            'message' => 'Profile updated successfully',
+            'alert-type' => 'success'
+        ];
+        return redirect()->back()->with($notification);
+    }
+    public function AdminChangePassword()
+    {
+        $id = Auth::guard('admin')->id();
+        $profileData = Admin::find($id);
+        if (!$profileData) {
+            abort('404', 'Profile not found');
+        }
+        return view('admin.admin_change_password', compact('profileData'));
+    }
+    public function AdminPasswordUpdate(Request $request)
+    {
+        $admin = Auth::guard('admin')->user();
+        $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+        if (!Hash::check($request->old_password, $admin->password)) {
+            $notification = [
+                'message' => 'Old Password does not match',
+                'alert-type' => 'error'
+            ];
+            return redirect()->back()->with($notification);
+        }
+        Admin::whereId($admin->id)->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+        $notification = [
+            'message' => 'Password updated successfully',
+            'alert-type' => 'success'
+        ];
+        return redirect()->back()->with($notification);
     }
 }
