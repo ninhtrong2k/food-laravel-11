@@ -1,5 +1,5 @@
-@extends('admin.admin_dashboard')
-@section('admin')
+@extends('client.client_dashboard')
+@section('client')
     <div class="page-content">
         <div class="container-fluid">
             <!-- start page title -->
@@ -54,7 +54,7 @@
                 </div>
                 <!-- end col -->
             </div>
-            <form action="{{ route('admin.profile.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('client.profile.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row">
                     <div class="col-xl-12 col-lg-12">
