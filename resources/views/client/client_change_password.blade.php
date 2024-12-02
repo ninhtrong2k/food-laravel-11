@@ -59,12 +59,6 @@
                         @csrf
                         <div class="row">
                             <div class="col-xl-12 col-lg-12">
-                                @foreach ($errors->all() as $error)
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        {{ $error }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                @endforeach
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
@@ -73,10 +67,16 @@
                                                     <div class="mt-3 mt-2">
                                                         <label for="old_password" class="form-label">Old Password</label>
                                                         <input class="form-control @error('old_password') is-invalid @enderror" type="text" name="old_password" value="" id="old_password">
+                                                        @error('old_password')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="mt-3 mt-2">
                                                         <label for="new_password" class="form-label">New Password</label>
                                                         <input class="form-control @error('new_password') is-invalid @enderror" type="text" name="new_password" value="" id="new_password">
+                                                        @error('new_password')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
                                                     </div>
                                                     <div class="mt-3 mt-2">
                                                         <label for="new_password_confirmation" class="form-label">Confirm New Password</label>

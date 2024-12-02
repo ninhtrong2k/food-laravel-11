@@ -86,7 +86,7 @@ class ClientController extends Controller
         $data->phone = $request->phone;
         $data->address = $request->address;
         if ($request->hasFile('photo')) {
-            $data->photo = $this->updateFile($request, 'photo', 'client/photo', $data->photo);
+            $data->photo = $this->updateFile($request, 'photo', 'user/photo', $data->photo);
         }
         $data->save();
         $notification = [
