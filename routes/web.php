@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Ádmin\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -56,3 +57,10 @@ Route::get('/client/logout', [ClientController::class, 'ClientLogout'])->name('c
 
 
 require __DIR__.'/auth.php';
+
+// All admin category
+Route::middleware('admin')->group(function () {
+    Route::controller(CategoryController::class)->group(function () {
+        Route::get('/all/category','AllCategory')->name('all.category');
+    });
+});
